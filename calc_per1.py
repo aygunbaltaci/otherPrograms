@@ -9,7 +9,6 @@ import numpy as np
 import pandas as pd
 
 # ======== variables
-inputFileName = "flight4_wifi_dl.pcap"
 perInputFileName = "sqn_dl.csv" # use this command to generate sqn list file: 'tshark -r flight4_wifi_ul.pcap -e frame.time_relative -e wlan.seq -Tfields | tee sqn_ul.csv'
 outputFileBeginWord = 'dl_'
 # Variables for checkIdenticalPkt()
@@ -52,50 +51,43 @@ def packetStats():
     pktLossPerSec = []
     prevPktCount = 0
     pktCount = 0
+    pktCount2 = 0
     cutData_sqn = []
     cutData_time = []
     organizedData = pd.DataFrame()
-    
-    pkts=rdpcap(inputFileName)
+
     data = pd.read_csv(perInputFileName)
     
     prevSqnNum = data.iloc[0, 1]
-    timeStampRef = int(pkts[0].time)
-    timeStampRef2 = int(pkts[0].time)
+    timeStampRef2 = int(data.iloc[0, 0])
     
     with open(outputFileName, 'a') as outputFile:
         outputFile.write('time, # of total packets, loss packets, per (%)\n')
     
     # calculate # of packets per second
-    pktSqnNum = data.iloc[0, 1]
-    maxSqnNum = 0
-    minSqnNum = 99999
-    
-    
-    for pkt in pkts:
-        if pkt == pkts[-1]:
-            break
-        #print("len data: %d, pktCnt: %d" %(len(data.iloc[:, 1]), pktCount))
-        pktSqnNum = data.iloc[pktCount, 1]
+    for i in range(len(data.iloc[:, 0])):
+        timeStamp = int(data.iloc[pktCount, 0]) # data.iloc[0, 0] correlates to the 2nd entry in csv input, therefore it counts 1 less pkt in the first time interval. 
         pktCount += 1
-        timeStamp = int(pkt.time)
         if int(timeStamp) - int(timeStampRef2) >= 1: 
-            numPktsPerSec.append(maxSqnNum - minSqnNum)
-            print("Time: %d, minSqnNum: %d, maxSqnNum: %d" %(timeStampRef2, minSqnNum, maxSqnNum))
+            numPktsPerSec.append(pktCount2)
+            print("Time: %d, # of packets: %d" %(timeStampRef2, pktCount2))
             if int(timeStamp) - int(timeStampRef2) > 1:
                 for j in range(int(timeStamp) - int(timeStampRef2) - 1):
                     numPktsPerSec.append(0.1) # 0.1 just to avoid 0 division error
             timeStampRef2 = int(timeStamp)
-            maxSqnNum = 0
-            minSqnNum = 99999
-        if pktSqnNum > maxSqnNum:
-            maxSqnNum = pktSqnNum
-        if pktSqnNum < minSqnNum:
-            minSqnNum = pktSqnNum
-            
+            pktCount2 = 0  
+        if i == len(data.iloc[:, 0]) - 1: # save the num of pkts from last second
+            numPktsPerSec.append(pktCount2 + 1) # +1 to count the last packet as well
+            print("Time: %d, # of packets: %d" %(timeStampRef2, pktCount2 + 1))
+            timeStampRef2 = int(timeStamp)
+            pktCount2 = 0
+        pktCount2 += 1
+    
+    # initialize empty array for PER 
     for i in range(len(numPktsPerSec)):
         pktLossPerSec.append(0)
     
+    # reorder packets according to PSNs
     for m in range (len(data.iloc[:, 1])):
         cutData_time.append(data.iloc[m, 0])
         cutData_sqn.append(data.iloc[m, 1])
@@ -110,17 +102,15 @@ def packetStats():
             for i in range (len(organizedData['sqn'])):
                 if not math.isnan(organizedData['sqn'].values[i]): # ignore empty cells in csv
                     sqnNum = organizedData['sqn'].values[i]
-                    if sqnNum - prevSqnNum >= 1:
-                        if sqnNum - prevSqnNum > 1:
-                            for j in range (int(sqnNum) - int(prevSqnNum) - 1):
-                                pktLossPerSec[int(organizedData['time'].values[i - 1])] += 1
-                                print("lost packet: t = %f, sqnNum = %d" %(organizedData['time'].values[i - 1], (sqnNum - j - 1)))    
+                    if sqnNum - prevSqnNum > 1:
+                        for j in range (int(sqnNum) - int(prevSqnNum)):
+                            pktLossPerSec[int(organizedData['time'].values[i - 1])] += 1
+                            print("lost packet: t = %f, sqnNum = %d" %(organizedData['time'].values[i - 1], (sqnNum - j - 1)))    
                             
                     prevSqnNum = sqnNum
     with open(outputFileName, 'a') as outputFile:
         for l in range (len(numPktsPerSec)):
-            outputFile.write('%d, %d, %d, %f\n' %(l + 1, numPktsPerSec[l], pktLossPerSec[l], (pktLossPerSec[l]/numPktsPerSec[l]) * 100))
-               
+            outputFile.write('%d, %d, %d, %f\n' %(l + 1, numPktsPerSec[l], pktLossPerSec[l], (pktLossPerSec[l]/numPktsPerSec[l]) * 100))               
 packetStats()
 
 ############## COMMANDS
