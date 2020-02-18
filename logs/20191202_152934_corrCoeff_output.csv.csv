@@ -1,0 +1,15 @@
+O S D . f l y T i m e " " [ s ]
+C U S T O M . h S p e e d " " [ m / s ]
+C U S T O M . d i s t a n c e " " [ m ]
+C A L C . h S p e e d " " [ m / s ]
+C A L C . d i s t a n c e " " [ m ]
+O S D . l a t i t u d e
+O S D . l o n g i t u d e
+O S D . h e i g h t " " [ m ]
+O S D . a l t i t u d e " " [ m ]
+O S D . x S p e e d " " [ m / s ]
+O S D . y S p e e d " " [ m / s ]
+O S D . z S p e e d " " [ m / s ]
+O S D . p i t c h
+O S D . r o l l
+O S D . y a w
