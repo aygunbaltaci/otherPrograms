@@ -24,7 +24,7 @@ elev = 40 # elevation angle of image
 minAltitude = 0 
 maxAltitude = 50
 extraSpaceBaseImg = 0.00001 # This number determines how much extra space (coord) to plot beyond min/max coord values from input data
-baseImgRes = 10 # base image resolution, 1 = best, 10 = worst (?)
+baseImgRes = 1 # base image resolution, 1 = best, 10 = worst (?)
 xLimMult = 0.03 # required for setting x-limit correctly on the plot, don't change
 yLimMult = 0.04 # required for setting y-limit correctly on the plot, don't change
 inputFile = 'plotMaps.csv'

@@ -7,7 +7,7 @@ from datetime import datetime
 
 # ============= Variables
 fileDate = datetime.now().strftime('%Y%m%d_%H%M%S_')
-inputFile = 'mean_stdDev_input.csv'
+inputFile = 'mean_stdDev_input.csv' # NOTE: place the flight time column as the first column of csv
 outputFile = 'mean_stdDev_output.csv'
 outputFileFormat = '.csv'
 inputDir = 'inputCsvFiles'
