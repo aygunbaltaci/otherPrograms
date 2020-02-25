@@ -68,7 +68,7 @@ for i in range(len(inputData[0])): # Assuming that the first col is the time col
     counter += 1
         
 # ============= Write Output Data
-spamWriter = csv.writer(open(outputDir + os.sep + outputFileName, 'w'), delimiter = outputFileDelimeter) # Open csv file to write output
+spamWriter = csv.writer(open(outputDir + os.sep + outputFileName, 'w', newline = ''), delimiter = outputFileDelimeter) # Open csv file to write output
 spamWriter.writerow(headerRow) # write the header
 concatenatedData = np.concatenate((meanVal, stdDevVal), axis = 1) # axis = 1 means to concatenate arrays column-wise
 spamWriter.writerows(concatenatedData)
