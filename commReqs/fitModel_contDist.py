@@ -143,9 +143,9 @@ def make_pdf(dist, params, size=10000):
     return pdf
 
 # Load data from statsmodels datasets
-allData = pd.read_csv('dlDataRate_forModeling.csv')
+allData = pd.read_csv('dataRates.csv')
 allData2 = allData.dropna()
-data = allData2['Data Rate (kbps)']
+data = allData2['Data Rate (kbps)_spark_ul']
 #data = pd.Series(sm.datasets.elnino.load_pandas().data.set_index('YEAR').values.ravel())
 
 # Plot for comparison
