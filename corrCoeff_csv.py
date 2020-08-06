@@ -1,4 +1,18 @@
-#!/usr/bin/python3.6
+#!/usr/bin/env python3
+
+#####################################################
+# 04.06.2020
+#
+# This code generates a correlation matrix graph
+# based on the input data given at 
+# inputfiles/correlation_coefficient_input.csv. 
+# 
+# Prerequisites: pip3 install pandas numpy matplotlib
+#
+# Author: Aygün Baltaci
+#
+# License: GNU General Public License v3.0
+#####################################################
 
 import os
 import csv
@@ -9,12 +23,12 @@ import matplotlib.pyplot as plt
 
 # ============= Variables
 fileDate = datetime.now().strftime('%Y%m%d_%H%M%S_')
-inputFile = 'corrCoeff.csv'
-outputFile = 'corrCoeff_output'
+inputFile = 'correlation_coefficient_input.csv'
+outputFile = 'correlation_coefficient_output'
 outputFileFormat = '.csv'
 outputImgFormat = '.pdf'
-inputDir = 'inputCsvFiles'
-outputDir = 'logs'
+inputDir = 'inputfiles'
+outputDir = 'outputfiles'
 outputFileName = fileDate + outputFile + outputFileFormat
 outputImgName = fileDate + outputFile + outputImgFormat
 inputFileDelimeter = ','

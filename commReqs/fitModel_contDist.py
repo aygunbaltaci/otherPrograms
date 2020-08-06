@@ -1,13 +1,29 @@
 #!/usr/bin/env python3
 
+#####################################################
+# 04.06.2020
+#
+# This code generates the PDF distribution of given
+# data and matches it to a best fitting continuous
+# distribution:
+# 
+# Provide your input data:  
+# inputfiles/input_fit_distribution.csv
+# 
+# Prerequisites: 
+# pip3 install matplotlib numpy pandas scipy 
+#
+# Author: Aygün Baltaci
+#
+# License: GNU General Public License v3.0
+#####################################################
+
 ######################## MAIN CODE TAKEN FROM: https://stackoverflow.com/questions/6620471/fitting-empirical-distribution-to-theoretical-ones-with-scipy-python?lq=1
 
 import warnings
 import numpy as np
 import pandas as pd
 import scipy.stats as st
-from statsmodels.tsa.arima_model import ARMA
-import statsmodels as sm
 import matplotlib
 import matplotlib.pyplot as plt
 import time
@@ -16,6 +32,10 @@ from datetime import datetime
 matplotlib.rcParams['figure.figsize'] = (16.0, 12.0)
 matplotlib.style.use('ggplot')
 currDate = datetime.now().strftime('%Y%m%d_%H%M%S')
+inputDir = 'inputfiles'
+inputFileName = "input_fit_distribution.csv"
+outputDir = 'outputfiles'
+outputFileName = "output_fit_distribution.csv"
 
 # Create models from data
 def best_fit_distribution(data, bins=200, ax=None):
@@ -31,8 +51,7 @@ def best_fit_distribution(data, bins=200, ax=None):
     y, x = np.histogram(data, bins=bins, density=True)
     x = (x + np.roll(x, -1))[:-1] / 2.0
 
-    # Distributions to check
-    # Discrete distribution models from scipy stats: https://docs.scipy.org/doc/scipy/reference/stats.html
+     # Continuous distribution models from scipy stats: https://docs.scipy.org/doc/scipy/reference/stats.html
     DISTRIBUTIONS = [        
         st.alpha,st.anglit,st.arcsine,st.beta,st.betaprime,st.bradford,st.burr,st.cauchy,st.chi,st.chi2,st.cosine,
         st.dgamma,st.dweibull,st.erlang,st.expon,st.exponnorm,st.exponweib,st.exponpow,st.f,st.fatiguelife,st.fisk,
@@ -45,15 +64,6 @@ def best_fit_distribution(data, bins=200, ax=None):
         st.rayleigh,st.rice,st.recipinvgauss,st.semicircular,st.t,st.triang,st.truncexpon,st.truncnorm,st.tukeylambda,
         st.uniform,st.vonmises,st.vonmises_line,st.wald,st.weibull_min,st.weibull_max,st.wrapcauchy
     ]
-    
-    '''[
-        st.bernoulli, st.binom, st.boltzmann, st.dlaplace, st.geom, st.hypergeom, st.logser,
-        st.nbinom, st.planck, st.poisson, st.randint, st.skellam, st.yulesimon, st.zipf
-    ]
-    
-    # Continuous distribution models from scipy stats: https://docs.scipy.org/doc/scipy/reference/stats.html
-    '''
-    
     
     # Best holders
     best_distribution = st.norm
@@ -119,7 +129,7 @@ def best_fit_distribution(data, bins=200, ax=None):
     print(outputData)
     outputData = outputData.sort_values('sse')
     print(outputData)
-    outputData.to_csv(currDate + "_output.csv", sep = ',')
+    outputData.to_csv(outputDir + os.sep + currDate + outputFileName, sep = ',')
 
     return (best_distribution.name, best_params, best_sse)
 
@@ -143,14 +153,13 @@ def make_pdf(dist, params, size=10000):
     return pdf
 
 # Load data from statsmodels datasets
-allData = pd.read_csv('dlDataRate_forModeling.csv')
+allData = pd.read_csv(inputDir + os.sep + inputFileName)
 allData2 = allData.dropna()
-data = allData2['Data Rate (kbps)']
-#data = pd.Series(sm.datasets.elnino.load_pandas().data.set_index('YEAR').values.ravel())
+data = allData2['Data Rate (kbps)_spark_ul']
 
 # Plot for comparison
 plt.figure(figsize=(12,8))
-ax = data.plot(kind='hist', bins=50, normed=True, alpha=0.5)#, color=plt.rcParams['axes.color_cycle'][1])
+ax = data.plot(kind='hist', bins=50, normed=True, alpha=0.5)
 # Save plot limits
 dataYLim = ax.get_ylim()
 

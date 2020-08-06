@@ -1,5 +1,33 @@
 #!/usr/bin/env python3
 
+#####################################################
+# 04.06.2020
+#
+# This code computes the PDF distribution of the 
+# given data and fits it to the user-selected 
+# distribution. It graphs the result. 
+# statistical distribution and graphs the PDF.  
+# 
+# Provide your input data:
+# inputfiles/input_removenans.csv 
+# 
+# Prerequisites: 
+# pip3 install matplotlib numpy pandas scipy
+#
+# The code fits the given data to a normal distribution.
+# If you want to fit to another distribution, change the
+# lines in the code: 
+# st.norm.* -> st.<selected-distribution-name>.*
+#
+# The names of the distributions are listed below:
+# https://docs.scipy.org/doc/scipy/reference/stats.html
+# 
+# Author: Aygün Baltaci
+#
+# License: GNU General Public License v3.0
+#####################################################
+
+import os
 import warnings
 import numpy as np
 import pandas as pd
@@ -13,51 +41,6 @@ import seaborn as sns
 import math
 from datetime import datetime
 import config_optional
-
-'''
-plt.rcParams.update(config_optional.parameters) # update matplotlib parameters
-
-kde_type = 'Gaussian'
-kde_bw = 1
-
-matplotlib.style.use('ggplot')
-allData = pd.read_csv('ulDataRate_forModeling.csv')
-allData2 = allData.dropna()
-data = allData2['Data Rate (kbps)']
-data2 = allData2['Data Rate (kbps)2']
-data3 = allData2['Data Rate (kbps)3']
-(mu, sigma) = st.norm.fit(data)
-(mu2, sigma2) = st.norm.fit(data2)
-(mu3, sigma3) = st.norm.fit(data3)
-
-# Plot for comparison
-plt.figure(figsize=(12,8))
-
-y, x = np.histogram(data, bins = 108, density = True)
-x = (x + np.roll(x, -1))[:-1] / 2.0
-params = st.norm.fit(data)
-    
-# Separate parts of parameters
-arg = params[:-2]
-loc = params[-2]
-scale = params[-1]
-pdf = st.norm.pdf(x, loc=loc, scale=scale, *arg)
-sse = np.sum(np.power(y - pdf, 2.0))
-print("mu = %f, sigma = %f, sse = %f" %(mu, sigma, sse))
-
-sns.distplot(data, kde = False, fit = st.norm, fit_kws={"linestyle": "--", "color":"coral"})#, color=plt.rcParams['axes.color_cycle'][1])
-sns.distplot(data2, kde = False, fit = st.norm, fit_kws={"linestyle": "--", "color":"steelblue"})#, color=plt.rcParams['axes.color_cycle'][1])
-sns.distplot(data3, kde = False, fit = st.norm, fit_kws={"linestyle": "--", "color":"mediumorchid"})#, color=plt.rcParams['axes.color_cycle'][1])
-
-plt.legend(["DJI Spark (μ = %.2f, σ = %.2f)" %(mu, sigma),
-           "DJI Mavic Air (μ = %.2f, σ = %.2f)" %(mu2, sigma2),
-           "Parrot AR 2.0 (μ = %.2f, σ = %.2f)" %(mu3, sigma3)])
-           
-plt.xlabel('Data Rate (kbps)')
-plt.ylabel('Frequency of Occurence')
-
-plt.show()
-'''
 plt.rcParams.update(config_optional.parameters) # update matplotlib parameters
 
 # Variables    
@@ -70,14 +53,17 @@ lineWidth = 2
 lineOpacity = 0.5
 numBins = 50
 figSize = (25.6, 14.4)
-fileName = 'ulData_forModeling.csv'
+inputDir = 'inputfiles'
+inputFileName = 'input_fitdata_toselecteddistribution_ul.csv'
+outputDir = 'outputfiles'
+outputfileName = 'output_fitdata_toselecteddistribution_ul.csv'
 currDate = datetime.now().strftime('%Y%m%d_%H%M%S')
 colNames = ['Packet Length (bytes)', 'Packet Length (bytes)2', 'Packet Length (bytes)3']
 title = ['DJI Spark', 'DJI Mavic', 'Parrot AR 2.0']
 xLabel = 'Packet Length (bytes)'
 
 # Fetch data and drop NaN
-allData = pd.read_csv(fileName)
+allData = pd.read_csv(inputDir + os.sep + inputFileName)
 allData2 = allData.dropna()
 
 # Initialize arrays
@@ -154,5 +140,5 @@ for i in range(numData):
     ax[i, 0].set_ylabel('Frequency')
     ax[i, 0].set_title(title[i]) 
 
-fig.savefig('%s.%s' %(currDate, 'pdf'), bbox_inches = 'tight', format = 'pdf')
+fig.savefig('%s.%s' %(outputDir + os.sep + currDate + '_' + outputFileName, 'pdf'), bbox_inches = 'tight', format = 'pdf')
 plt.show()

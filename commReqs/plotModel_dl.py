@@ -1,15 +1,40 @@
 #!/usr/bin/env python3
 
+#####################################################
+# 04.06.2020
+#
+# This code computes the PDF distribution of the 
+# given data and fits it to the user-selected 
+# distribution. It graphs the result. 
+# statistical distribution and graphs the PDF.  
+# 
+# Provide your input data:
+# inputfiles/input_removenans.csv 
+# 
+# Prerequisites: 
+# pip3 install matplotlib numpy pandas scipy
+#
+# The code fits the given data to a normal distribution.
+# If you want to fit to another distribution, change the
+# lines in the code: 
+# st.norm.* -> st.<selected-distribution-name>.*
+#
+# The names of the distributions are listed below:
+# https://docs.scipy.org/doc/scipy/reference/stats.html
+# 
+# Author: Aygün Baltaci
+#
+# License: GNU General Public License v3.0
+#####################################################
+
+import os
 import warnings
 import numpy as np
 import pandas as pd
 import scipy.stats as st
-from statsmodels.tsa.arima_model import ARMA
-import statsmodels as sm
 import matplotlib
 import matplotlib.pyplot as plt
 import time
-import seaborn as sns
 import math
 from datetime import datetime
 import matplotlib as mpl
@@ -27,14 +52,17 @@ lineWidth = 2
 lineOpacity = 0.5
 numBins = 50
 figSize = (25.6, 14.4)
-fileName = 'dlData_forModeling.csv'
+inputDir = 'inputfiles'
+inputFileName = 'input_fitdata_toselecteddistribution_dl.csv'
+outputDir = 'outputfiles'
+outputFileName = 'output_fitdata_toselecteddistribution_dl.csv'
 title = ['DJI Spark', 'DJI Mavic', 'Parrot AR 2.0']
 currDate = datetime.now().strftime('%Y%m%d_%H%M%S')
-colNames = ['Packet Length (bytes)', 'Packet Length (bytes)2', 'Packet Length (bytes)3']
-xLabel = 'Packet Length (bytes)'
+colNames = ['Packet Interval (ms)', 'Packet Interval (ms)2', 'Packet Interval (ms)3']
+xLabel = 'Packet Interval (ms)'
 
 # Fetch data and drop NaN
-allData = pd.read_csv(fileName)
+allData = pd.read_csv(inputDir + os.sep + inputFileName)
 allData2 = allData.dropna()
 
 # Initialize arrays
@@ -107,5 +135,5 @@ for i in range(numData):
     ax[i, 0].set_ylabel('Frequency')
     ax[i, 0].set_title(title[i])
 
-fig.savefig('%s.%s' %(currDate, 'pdf'), bbox_inches = 'tight', format = 'pdf')
+fig.savefig('%s.%s' %(outputDir + os.sep + currDate + '_' + outputFileName, 'pdf'), bbox_inches = 'tight', format = 'pdf')
 plt.show()
